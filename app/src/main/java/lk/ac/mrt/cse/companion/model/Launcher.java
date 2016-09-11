@@ -10,10 +10,12 @@ public class Launcher {
 
     private String title;
     private Drawable icon;
+    private String launchData;
 
-    public Launcher(String title, Drawable icon) {
+    public Launcher(String title, Drawable icon, String launchData) {
         this.title = title;
         this.icon = icon;
+        this.launchData = launchData;
     }
 
     public String getTitle() {
@@ -30,5 +32,9 @@ public class Launcher {
 
     public void setIcon(Drawable icon) {
         this.icon = icon;
+    }
+
+    public String getLaunchData() {
+        return launchData;
     }
 }

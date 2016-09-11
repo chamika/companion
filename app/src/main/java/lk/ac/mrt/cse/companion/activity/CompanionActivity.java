@@ -10,10 +10,14 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.flipkart.chatheads.ui.ChatHead;
+import com.flipkart.chatheads.ui.ChatHeadArrangement;
 import com.flipkart.chatheads.ui.ChatHeadContainer;
+import com.flipkart.chatheads.ui.ChatHeadListener;
 import com.flipkart.chatheads.ui.ChatHeadViewAdapter;
 import com.flipkart.chatheads.ui.MaximizedArrangement;
 import com.flipkart.chatheads.ui.MinimizedArrangement;
+
+import java.io.Serializable;
 
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.fragment.LaunchersFragment;
@@ -60,5 +64,33 @@ public class CompanionActivity extends AppCompatActivity {
 
         chatContainer.addChatHead("head0", false,true);
         chatContainer.setArrangement(MaximizedArrangement.class, null);
+        chatContainer.setListener(new ChatHeadListener<String>() {
+            @Override
+            public void onChatHeadAdded(String key) {
+
+            }
+
+            @Override
+            public void onChatHeadRemoved(String key, boolean userTriggered) {
+                if(chatContainer.getChatHeads().size() == 0){
+                    finish();
+                }
+            }
+
+            @Override
+            public void onChatHeadArrangementChanged(ChatHeadArrangement oldArrangement, ChatHeadArrangement newArrangement) {
+
+            }
+
+            @Override
+            public <T extends Serializable> void onChatHeadAnimateEnd(ChatHead<T> chatHead) {
+
+            }
+
+            @Override
+            public <T extends Serializable> void onChatHeadAnimateStart(ChatHead chatHead) {
+
+            }
+        });
     }
 }
