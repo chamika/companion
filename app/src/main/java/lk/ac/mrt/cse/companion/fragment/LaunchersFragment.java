@@ -1,8 +1,14 @@
 package lk.ac.mrt.cse.companion.fragment;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.os.AsyncTaskCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,13 +46,36 @@ public class LaunchersFragment extends Fragment {
     }
 
     private void updateData() {
-        List<Launcher> data = new ArrayList<>();
-        data.add(new Launcher("App1", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Launcher("App2", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Launcher("App3", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Launcher("App4", getResources().getDrawable(R.mipmap.ic_launcher)));
 
-        adapter.addAll(data);
-        adapter.notifyDataSetChanged();
+
+        AsyncTask<String, Integer, List> task = new AsyncTask<String, Integer, List>() {
+
+            @Override
+            protected List doInBackground(String... params) {
+                List<Launcher> data = new ArrayList<>();
+
+                final Intent main_intent = new Intent(Intent.ACTION_MAIN, null);
+                main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                PackageManager packageManager = getContext().getPackageManager();
+                List<ResolveInfo> infoList = packageManager.queryIntentActivities(main_intent, 0);
+
+                for(ResolveInfo ri : infoList)
+                {
+                    Drawable drawable = ri.loadIcon(packageManager);
+                    CharSequence title = ri.loadLabel(packageManager);
+                    data.add(new Launcher((String) title,drawable));
+                }
+
+                return data;
+            }
+
+            @Override
+            protected void onPostExecute(List list) {
+                super.onPostExecute(list);
+                adapter.addAll(list);
+                adapter.notifyDataSetChanged();
+            }
+        };
+        task.execute();
     }
 }
