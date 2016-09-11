@@ -1,15 +1,38 @@
 package lk.ac.mrt.cse.companion.service;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.google.android.gms.awareness.Awareness;
+import com.google.android.gms.awareness.snapshot.DetectedActivityResult;
+import com.google.android.gms.awareness.snapshot.HeadphoneStateResult;
+import com.google.android.gms.awareness.snapshot.LocationResult;
+import com.google.android.gms.awareness.snapshot.PlacesResult;
+import com.google.android.gms.awareness.snapshot.WeatherResult;
+import com.google.android.gms.awareness.state.HeadphoneState;
+import com.google.android.gms.awareness.state.Weather;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.places.PlaceLikelihood;
 import com.txusballesteros.bubbles.BubbleLayout;
 import com.txusballesteros.bubbles.BubblesManager;
+
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.activity.CompanionActivity;
@@ -22,9 +45,12 @@ public class BackgroundService extends Service {
 
     private static final String TAG = BackgroundService.class.getSimpleName();
 
+    private static Timer timer;
+
     private boolean started = false;
     private BubblesManager bubblesManager;
     private BubbleLayout bubbleView;
+    private GoogleApiClient client;
 
     @Nullable
     @Override
@@ -47,6 +73,11 @@ public class BackgroundService extends Service {
                 .build();
         bubblesManager.initialize();
 
+        client = new GoogleApiClient.Builder(this)
+                .addApi(Awareness.API)
+                .build();
+        client.connect();
+
 
     }
 
@@ -55,6 +86,11 @@ public class BackgroundService extends Service {
         if (!started) {
             showBubble();
             started = true;
+            if(timer != null){
+                timer.cancel();
+            }
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 5000);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -64,6 +100,7 @@ public class BackgroundService extends Service {
         hideBubble();
         super.onDestroy();
         started = false;
+        timer.cancel();
     }
 
     private void showBubble() {
@@ -77,8 +114,7 @@ public class BackgroundService extends Service {
         try {
 //            bubblesManager.removeBubble(bubbleView);
             bubblesManager.recycle();
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             Log.e(TAG, "Cannot remove bubble");
         }
     }
@@ -96,6 +132,143 @@ public class BackgroundService extends Service {
             });
         }
     }
+
+
+
+
+    private void getSnapshotUpdate() {
+        Awareness.SnapshotApi.getDetectedActivity(client)
+                .setResultCallback(new ResultCallback<DetectedActivityResult>() {
+                    @Override
+                    public void onResult(@NonNull DetectedActivityResult detectedActivityResult) {
+                        if (!detectedActivityResult.getStatus().isSuccess()) {
+                            Log.e("MainActivity", "Could not get the current activity.");
+                            Log.d(TAG, "Could not get the current activity.");
+                            return;
+                        }
+                        ActivityRecognitionResult ar = detectedActivityResult.getActivityRecognitionResult();
+                        DetectedActivity probableActivity = ar.getMostProbableActivity();
+                        Log.i("MainActivity", probableActivity.toString());
+                        Log.d(TAG, probableActivity.toString() + " at " + getTimeText());
+                    }
+                });
+
+        Awareness.SnapshotApi.getHeadphoneState(client).setResultCallback(new ResultCallback<HeadphoneStateResult>() {
+            @Override
+            public void onResult(@NonNull HeadphoneStateResult headphoneStateResult) {
+                if (!headphoneStateResult.getStatus().isSuccess()) {
+                    Log.d(TAG, "Could not get the headphone state.");
+                    return;
+                }
+                HeadphoneState headphoneState = headphoneStateResult.getHeadphoneState();
+                String state = "";
+                if (headphoneState.getState() == HeadphoneState.PLUGGED_IN) {
+                    state = "PLUGGED_IN";
+                } else if (headphoneState.getState() == HeadphoneState.UNPLUGGED) {
+                    state = "UNPLUGGED";
+                }
+                Log.d(TAG, state + " at " + getTimeText());
+            }
+        });
+
+        //Already granted permission at app startup
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Awareness.SnapshotApi.getLocation(client).setResultCallback(new ResultCallback<LocationResult>() {
+            @Override
+            public void onResult(@NonNull LocationResult locationResult) {
+                if (!locationResult.getStatus().isSuccess()) {
+                    Log.d(TAG, "Could not get location");
+                    return;
+                }
+                Log.d(TAG, locationResult.getLocation().toString() + " at " + getTimeText());
+            }
+        });
+        Awareness.SnapshotApi.getPlaces(client).setResultCallback(new ResultCallback<PlacesResult>() {
+            @Override
+            public void onResult(@NonNull PlacesResult placesResult) {
+                if (!placesResult.getStatus().isSuccess()) {
+                    Log.d(TAG,"Could not get place result");
+                    return;
+                }
+                StringBuilder sb = new StringBuilder();
+                if(placesResult.getPlaceLikelihoods() != null) {
+                    for (PlaceLikelihood hood : placesResult.getPlaceLikelihoods()) {
+                        sb.append(hood.getPlace().getName());
+                        sb.append(',');
+                    }
+                }else{
+                    sb.append("No places found");
+                }
+                Log.d(TAG,sb.toString() + " at " + getTimeText());
+
+            }
+        });
+
+
+        Awareness.SnapshotApi.getWeather(client).setResultCallback(new ResultCallback<WeatherResult>() {
+            @Override
+            public void onResult(@NonNull WeatherResult weatherResult) {
+                if (!weatherResult.getStatus().isSuccess()) {
+                    Log.d(TAG,"Could not get weather");
+                    return;
+                }
+                Weather weather = weatherResult.getWeather();
+                if(weather != null) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Temperature:");
+                    sb.append(weather.getTemperature(Weather.CELSIUS));
+                    sb.append("`C, Feels like:");
+                    sb.append(weather.getFeelsLikeTemperature(Weather.CELSIUS));
+                    sb.append("`C, Dew Point:");
+                    sb.append(weather.getDewPoint(Weather.CELSIUS));
+                    sb.append("`C, Humidiy:");
+                    sb.append(weather.getHumidity());
+                    sb.append(", Conditions:");
+
+                    int[] conditions = weather.getConditions();
+                    for(int val:conditions){
+                        try {
+                            sb.append(getVariableName("CONDITION_",Weather.class,val));
+                            sb.append(", ");
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.d(TAG,sb.toString() + " at " + getTimeText());
+                }else{
+                    Log.d(TAG,"No weather data found at " + getTimeText());
+                }
+            }
+        });
+
+
+    }
+
+    private String getVariableName(String prefix, Class clazz, Object value) throws IllegalAccessException {
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for(Field field:declaredFields){
+            if(field.getName().startsWith(prefix) && value.equals(field.get(null))){
+                return field.getName().replace(prefix,"");
+            }
+        }
+        return "";
+    }
+
+
+    private String getTimeText() {
+        return new SimpleDateFormat("hh:mm:ss").format(new Date());
+    }
+
+    private class SnapshopRetriever extends TimerTask{
+
+        @Override
+        public void run() {
+            getSnapshotUpdate();
+        }
+    }
+
 }
 
 

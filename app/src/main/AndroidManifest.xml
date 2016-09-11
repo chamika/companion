@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="lk.ac.mrt.cse.companion">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -10,6 +11,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.awareness.API_KEY"
+            android:value="AIzaSyDgcMEXZ-gCuoE9N_sVE07NLnn8M4m4PKs"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDgcMEXZ-gCuoE9N_sVE07NLnn8M4m4PKs" />
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
