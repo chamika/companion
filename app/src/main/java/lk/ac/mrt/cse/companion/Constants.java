@@ -6,6 +6,7 @@ package lk.ac.mrt.cse.companion;
 
 public class Constants {
 
+    public static final String CONTEXT_ANY = "Any";
     public static final String CONTEXT_ACTIVITY = "Activity";
     public static final String CONTEXT_HEADPHONE = "Headphone";
     public static final String CONTEXT_LOCATION = "Location";

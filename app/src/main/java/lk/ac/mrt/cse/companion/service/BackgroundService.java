@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,6 +37,7 @@ import java.util.TimerTask;
 
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.activity.CompanionActivity;
+import lk.ac.mrt.cse.companion.util.ContextBundler;
 
 /**
  * Created by chamika on 9/11/16.
@@ -52,10 +54,13 @@ public class BackgroundService extends Service {
     private BubbleLayout bubbleView;
     private GoogleApiClient client;
 
+    private ContextBundler contextBundler = new ContextBundler();
+    private final IBinder binder = new LocalBinder();
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class BackgroundService extends Service {
                 timer.cancel();
             }
             timer = new Timer();
-            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 5000);
+            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 10000);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -101,6 +106,10 @@ public class BackgroundService extends Service {
         super.onDestroy();
         started = false;
         timer.cancel();
+    }
+
+    public ContextBundler getContextBundler() {
+        return contextBundler;
     }
 
     private void showBubble() {
@@ -150,6 +159,7 @@ public class BackgroundService extends Service {
                         DetectedActivity probableActivity = ar.getMostProbableActivity();
                         Log.i("MainActivity", probableActivity.toString());
                         Log.d(TAG, probableActivity.toString() + " at " + getTimeText());
+                        contextBundler.addContext(ar);
                     }
                 });
 
@@ -168,6 +178,7 @@ public class BackgroundService extends Service {
                     state = "UNPLUGGED";
                 }
                 Log.d(TAG, state + " at " + getTimeText());
+                contextBundler.addContext(headphoneStateResult);
             }
         });
 
@@ -202,7 +213,7 @@ public class BackgroundService extends Service {
                     sb.append("No places found");
                 }
                 Log.d(TAG,sb.toString() + " at " + getTimeText());
-
+                contextBundler.addContext(placesResult);
             }
         });
 
@@ -237,6 +248,7 @@ public class BackgroundService extends Service {
                         }
                     }
                     Log.d(TAG,sb.toString() + " at " + getTimeText());
+                    contextBundler.addContext(weatherResult);
                 }else{
                     Log.d(TAG,"No weather data found at " + getTimeText());
                 }
@@ -269,6 +281,16 @@ public class BackgroundService extends Service {
         }
     }
 
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        public BackgroundService getService() {
+            // Return this instance of BackgroundService so clients can call public methods
+            return BackgroundService.this;
+        }
+    }
 }
 
 

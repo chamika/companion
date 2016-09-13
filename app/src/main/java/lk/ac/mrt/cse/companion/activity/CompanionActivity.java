@@ -1,8 +1,11 @@
 package lk.ac.mrt.cse.companion.activity;
 
-import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.ActivityCompat;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,21 +18,31 @@ import com.flipkart.chatheads.ui.ChatHeadContainer;
 import com.flipkart.chatheads.ui.ChatHeadListener;
 import com.flipkart.chatheads.ui.ChatHeadViewAdapter;
 import com.flipkart.chatheads.ui.MaximizedArrangement;
-import com.flipkart.chatheads.ui.MinimizedArrangement;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.fragment.LaunchersFragment;
+import lk.ac.mrt.cse.companion.service.BackgroundService;
+import lk.ac.mrt.cse.companion.util.ContextBundler;
 
 public class CompanionActivity extends AppCompatActivity {
+
+    private static Timer timer;
+    private ChatHeadContainer chatContainer;
+    private BackgroundService backgroundService;
+    boolean bound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_companion);
 
-        final ChatHeadContainer chatContainer = (ChatHeadContainer) findViewById(R.id.chat_head_container);
+        chatContainer = (ChatHeadContainer) findViewById(R.id.chat_head_container);
         chatContainer.setViewAdapter(new ChatHeadViewAdapter<String>() {
             @Override
             public FragmentManager getFragmentManager() {
@@ -62,7 +75,8 @@ public class CompanionActivity extends AppCompatActivity {
             }
         });
 
-        chatContainer.addChatHead("head0", false,true);
+        chatContainer.addChatHead(Constants.CONTEXT_ANY, true, true);
+
         chatContainer.setArrangement(MaximizedArrangement.class, null);
         chatContainer.setListener(new ChatHeadListener<String>() {
             @Override
@@ -72,7 +86,7 @@ public class CompanionActivity extends AppCompatActivity {
 
             @Override
             public void onChatHeadRemoved(String key, boolean userTriggered) {
-                if(chatContainer.getChatHeads().size() == 0){
+                if (chatContainer.getChatHeads().size() == 0) {
                     finish();
                 }
             }
@@ -92,5 +106,77 @@ public class CompanionActivity extends AppCompatActivity {
 
             }
         });
+
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new UpdateChecker(), 0, 10000);
+    }
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) service;
+            CompanionActivity.this.backgroundService = binder.getService();
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            bound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, BackgroundService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (bound) {
+            unbindService(connection);
+            bound = false;
+        }
+    }
+
+    private class UpdateChecker extends TimerTask {
+
+        @Override
+        public void run() {
+            if (backgroundService != null) {
+                checkForUpdate(backgroundService.getContextBundler());
+            }
+        }
+    }
+
+    private void checkForUpdate(ContextBundler bundler) {
+        Set<String> updatedTypes = bundler.getUpdatedTypes();
+        if (updatedTypes.size() > 0) {
+            for (final String key : updatedTypes) {
+                updatedTypes.remove(key);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatContainer.removeChatHead(key, false);
+                        chatContainer.addChatHead(key,false,true);
+                    }
+                });
+
+            }
+        }
+
     }
 }
