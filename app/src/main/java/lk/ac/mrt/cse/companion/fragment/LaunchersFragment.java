@@ -32,6 +32,7 @@ public class LaunchersFragment extends Fragment {
     private final static String TAG = LaunchersFragment.class.getSimpleName();
     private GridView gridView;
     private IconAdapter adapter;
+    private OnAppLaunchListener launchListener;
 
     @Nullable
     @Override
@@ -58,6 +59,9 @@ public class LaunchersFragment extends Fragment {
                                 intent.setComponent(new ComponentName(packageName, mainActivity));
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getContext().startActivity(intent);
+                                if(launchListener != null){
+                                    launchListener.onAppLaunch(item);
+                                }
                             }
                         } else {
                             Toast.makeText(getContext(), "Cannot start the activity", Toast.LENGTH_LONG).show();
@@ -74,6 +78,10 @@ public class LaunchersFragment extends Fragment {
         updateData();
 
         return view;
+    }
+
+    public void setLaunchListener(OnAppLaunchListener launchListener) {
+        this.launchListener = launchListener;
     }
 
     private void updateData() {

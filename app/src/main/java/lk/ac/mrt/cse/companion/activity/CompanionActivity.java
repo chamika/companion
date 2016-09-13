@@ -27,10 +27,12 @@ import java.util.TimerTask;
 import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.fragment.LaunchersFragment;
+import lk.ac.mrt.cse.companion.fragment.OnAppLaunchListener;
+import lk.ac.mrt.cse.companion.model.Launcher;
 import lk.ac.mrt.cse.companion.service.BackgroundService;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
 
-public class CompanionActivity extends AppCompatActivity {
+public class CompanionActivity extends AppCompatActivity implements OnAppLaunchListener {
 
     private static Timer timer;
     private ChatHeadContainer chatContainer;
@@ -54,7 +56,9 @@ public class CompanionActivity extends AppCompatActivity {
                 // return the fragment which should be shown when the arrangment switches to maximized (on clicking a chat head)
                 // you can use the key parameter to get back the object you passed in the addChatHead method.
                 // this key should be used to decide which fragment to show.
-                return new LaunchersFragment();
+                LaunchersFragment launchersFragment = new LaunchersFragment();
+                launchersFragment.setLaunchListener(CompanionActivity.this);
+                return launchersFragment;
             }
 
             @Override
@@ -149,6 +153,14 @@ public class CompanionActivity extends AppCompatActivity {
         if (bound) {
             unbindService(connection);
             bound = false;
+        }
+    }
+
+    @Override
+    public void onAppLaunch(Launcher launcher) {
+        //TODO: save to database with current context and launcher.package
+        if(backgroundService != null){
+            ContextBundler contextBundler = backgroundService.getContextBundler();
         }
     }
 
