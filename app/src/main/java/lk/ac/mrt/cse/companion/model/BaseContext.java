@@ -1,6 +1,6 @@
 package lk.ac.mrt.cse.companion.model;
 
-import com.google.android.gms.common.api.Result;
+import java.util.List;
 
 /**
  * Created by chamika on 9/13/2016.
@@ -8,20 +8,32 @@ import com.google.android.gms.common.api.Result;
 
 public abstract class BaseContext<T> {
 
-    protected T oldData;
+    protected T data;
 
     /**
-     * Measure the difference of the #oldData and new Data.
+     * Measure the difference of the #data and new Data.
      * @param newData
      * @return 0 is equals and higher the value, increase the difference
      */
     public abstract int difference(T newData);
 
-    public T getOldData() {
-        return oldData;
+    /**
+     * Minimum value of difference level for context change
+     * @return
+     */
+    public abstract int minChangeLevel();
+
+    /**
+     * Get the states from the data
+     * @return
+     */
+    public abstract List<String> getStates();
+
+    public T getData() {
+        return data;
     }
 
-    public void setOldData(T oldData) {
-        this.oldData = oldData;
+    public void setData(T data) {
+        this.data = data;
     }
 }

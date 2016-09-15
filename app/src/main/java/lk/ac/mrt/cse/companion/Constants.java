@@ -10,6 +10,6 @@ public class Constants {
     public static final String CONTEXT_ACTIVITY = "Activity";
     public static final String CONTEXT_HEADPHONE = "Headphone";
     public static final String CONTEXT_LOCATION = "Location";
-    public static final String CONTEXT_PLACE = "Place";
+    public static final String CONTEXT_PLACES = "Places";
     public static final String CONTEXT_WEATHER = "Weather";
 }

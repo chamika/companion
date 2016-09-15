@@ -20,6 +20,7 @@ import com.flipkart.chatheads.ui.ChatHeadViewAdapter;
 import com.flipkart.chatheads.ui.MaximizedArrangement;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -177,7 +178,8 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
     private void checkForUpdate(ContextBundler bundler) {
         Set<String> updatedTypes = bundler.getUpdatedTypes();
         if (updatedTypes.size() > 0) {
-            for (final String key : updatedTypes) {
+            HashSet<String> clone = new HashSet<>(updatedTypes);
+            for (final String key : clone) {
                 updatedTypes.remove(key);
                 runOnUiThread(new Runnable() {
                     @Override
