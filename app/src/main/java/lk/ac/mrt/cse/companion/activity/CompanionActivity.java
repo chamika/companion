@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +21,11 @@ import com.flipkart.chatheads.ui.ChatHeadViewAdapter;
 import com.flipkart.chatheads.ui.MaximizedArrangement;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,9 +34,12 @@ import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.fragment.LaunchersFragment;
 import lk.ac.mrt.cse.companion.fragment.OnAppLaunchListener;
+import lk.ac.mrt.cse.companion.model.BaseContext;
+import lk.ac.mrt.cse.companion.model.Event;
 import lk.ac.mrt.cse.companion.model.Launcher;
 import lk.ac.mrt.cse.companion.service.BackgroundService;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
+import lk.ac.mrt.cse.companion.util.DataHandler;
 
 public class CompanionActivity extends AppCompatActivity implements OnAppLaunchListener {
 
@@ -158,10 +166,38 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
     }
 
     @Override
-    public void onAppLaunch(Launcher launcher) {
+    public void onAppLaunch(final Launcher launcher) {
         //TODO: save to database with current context and launcher.package
-        if(backgroundService != null){
-            ContextBundler contextBundler = backgroundService.getContextBundler();
+        if (backgroundService != null) {
+
+            new AsyncTask<Launcher, Integer, Boolean>() {
+
+                @Override
+                protected Boolean doInBackground(Launcher... params) {
+                    ContextBundler contextBundler = backgroundService.getContextBundler();
+                    if (contextBundler != null) {
+                        String app = launcher.getLaunchData();
+                        for (Map.Entry<String, BaseContext> entry : contextBundler.getContextes().entrySet()) {
+                            String type = entry.getKey();
+                            BaseContext baseContext = entry.getValue();
+                            if(baseContext != null && baseContext.getStates() != null ) {
+                                List<String> states = new ArrayList<String>(baseContext.getStates());
+                                for (String state : states) {
+                                    DataHandler.saveEvent(getApplicationContext(), new Event(app, type, state));
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean aBoolean) {
+                    super.onPostExecute(aBoolean);
+                    finish();
+                }
+            }.execute(launcher);
+
         }
     }
 
@@ -185,7 +221,7 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                     @Override
                     public void run() {
                         chatContainer.removeChatHead(key, false);
-                        chatContainer.addChatHead(key,false,true);
+                        chatContainer.addChatHead(key, false, true);
                     }
                 });
 

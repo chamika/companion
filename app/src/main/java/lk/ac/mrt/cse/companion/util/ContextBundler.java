@@ -83,4 +83,8 @@ public class ContextBundler {
     public Set<String> getUpdatedTypes() {
         return updatedTypes;
     }
+
+    public Map<String, BaseContext> getContextes() {
+        return contextes;
+    }
 }

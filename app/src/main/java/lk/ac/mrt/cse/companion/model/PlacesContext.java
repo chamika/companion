@@ -36,7 +36,7 @@ public class PlacesContext extends BaseContext<PlacesResult> {
 
     @Override
     public List<String> getStates() {
-        return null;
+        return getPlaceNames(data);
     }
 
 

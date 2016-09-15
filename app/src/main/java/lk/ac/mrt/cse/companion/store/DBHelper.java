@@ -36,13 +36,11 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_EVENTS);
-        //TODO: Add other create sqls
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DELETE_EVENTS);
-        //TODO: Add other delete sqls
         onCreate(db);
     }
 }
