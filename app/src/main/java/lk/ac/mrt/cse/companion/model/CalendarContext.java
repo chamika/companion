@@ -8,21 +8,19 @@ import java.util.List;
  */
 public class CalendarContext extends BaseContext<CalendarEventsResult> {
 
-    public static int MAX_STATES = 1;
 
     @Override
     public int difference(CalendarEventsResult newData) {
-        int diff = minChangeLevel() + 1;
+        int diff = minChangeLevel() + getEventIds(data).size();
 
         if (data != null && newData != null) {
             List<String> oldEvents = getEventIds(data);
-            //MAX_STATES = oldEvents.size();
 
             List<String> newEvents = getEventIds(newData);
             diff = Math.max(oldEvents.size(), newEvents.size());
-            for (String oldPlace : oldEvents) {
+            for (String oldEvent : oldEvents) {
                 for (String newEvent : newEvents) {
-                    if (oldPlace.equals(newEvent)) {
+                    if (oldEvent.equals(newEvent)) {
                         --diff;
                     }
                 }
@@ -33,7 +31,6 @@ public class CalendarContext extends BaseContext<CalendarEventsResult> {
 
     @Override
     public int minChangeLevel() {
-        //return getEventIds(data).size()-1;
         return 0;
     }
 
@@ -46,8 +43,7 @@ public class CalendarContext extends BaseContext<CalendarEventsResult> {
     private List<String> getEventIds(CalendarEventsResult result) {
         List<String> eventIds = new ArrayList<>();
         if (result.getCalendarEvents() != null) {
-            int max = Math.min(result.getCalendarEvents().size(), MAX_STATES);
-            for (int i = 0; i < max; i++) {
+            for (int i = 0; i < result.getCalendarEvents().size(); i++) {
                 CalendarEvent event = result.getCalendarEvents().get(i);
                 eventIds.add(String.valueOf(event.getId()));
             }
