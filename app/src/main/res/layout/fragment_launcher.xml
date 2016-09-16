@@ -1,21 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:background="@drawable/launcher_fragment_background"
     tools:context="lk.ac.mrt.cse.companion.activity.CompanionActivity">
+
+    <ImageView
+        android:id="@+id/image_action"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_margin="@dimen/launcher_margins"
+        android:src="@drawable/chat_head_activity" />
+
+    <TextView
+        android:id="@+id/text_states"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/image_action"
+        android:layout_alignBottom="@id/image_action"
+        android:layout_toRightOf="@id/image_action"
+        android:gravity="center_vertical"
+        android:text="Walking"
+        android:layout_marginRight="@dimen/launcher_margins"
+        android:textColor="@color/grid_item_text"
+        android:textSize="20sp" />
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/image_action"
         android:columnWidth="@dimen/icon_item_width"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp"
-        android:stretchMode="columnWidth"
         android:gravity="center"
-        />
+        android:horizontalSpacing="0dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="0dp" />
 
-</LinearLayout>
+</RelativeLayout>

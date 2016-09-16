@@ -10,4 +10,7 @@
     <color name="location">#1DE9B6</color>
     <color name="places">#5D4037</color>
     <color name="weather">#039BE5</color>
+
+    <color name="laucher_fragment_background">#DCFFFFFF</color>
+    <color name="grid_item_text">#546E7A</color>
 </resources>

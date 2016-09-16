@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ public class LaunchersFragment extends Fragment {
 
     private GridView gridView;
     private IconAdapter adapter;
+    private ImageView imageTitle;
+    private TextView textStates;
     private OnAppLaunchListener launchListener;
     private BaseContext baseContext;
     private String type;
@@ -52,6 +56,8 @@ public class LaunchersFragment extends Fragment {
 //        super.onCreateView(inflater, container, savedInstanceState)
 
         View view = inflater.inflate(R.layout.fragment_launcher, container, false);
+        imageTitle = (ImageView) view.findViewById(R.id.image_action);
+        textStates = (TextView) view.findViewById(R.id.text_states);
         gridView = (GridView) view.findViewById(R.id.gridview);
         adapter = new IconAdapter(getContext(), R.layout.layout_icon_text, R.id.title, R.id.image);
         gridView.setAdapter(adapter);
@@ -98,6 +104,11 @@ public class LaunchersFragment extends Fragment {
 
     private void updateData() {
 
+        if (baseContext != null) {
+            textStates.setText(formatStates(baseContext.getStates()));
+        } else if (Constants.CONTEXT_ANY.equals(type)) {
+            textStates.setText("All Applications");
+        }
 
         AsyncTask<String, Integer, List> task = new AsyncTask<String, Integer, List>() {
 
@@ -161,5 +172,20 @@ public class LaunchersFragment extends Fragment {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    private String formatStates(List<String> states) {
+        if (states != null) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < states.size(); i++) {
+                if (i != 0) {
+                    sb.append("\n");
+                }
+                String state = states.get(i);
+                sb.append(state);
+            }
+            return sb.toString();
+        }
+        return "";
     }
 }
