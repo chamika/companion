@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/location" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <stroke
+                android:width="20dp"
+                android:color="#ffffff" />
+        </shape>
+    </item>
+
+    <item
+        android:gravity="center"
+        android:bottom="@dimen/chat_head_icon_margin"
+        android:top="@dimen/chat_head_icon_margin"
+        android:left="@dimen/chat_head_icon_margin"
+        android:right="@dimen/chat_head_icon_margin"
+        android:drawable="@drawable/icon_location" />
+
+</layer-list>

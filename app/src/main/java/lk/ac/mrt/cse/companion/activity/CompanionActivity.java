@@ -80,7 +80,28 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
             public Drawable getChatHeadDrawable(String key) {
                 // this is where you return a drawable for the chat head itself based on the key. Typically you return a circular shape
                 // you may want to checkout circular image library https://github.com/flipkart-incubator/circular-image
-                return getResources().getDrawable(R.mipmap.ic_launcher);
+                int resource = R.mipmap.ic_launcher;
+                switch (key) {
+                    case Constants.CONTEXT_ANY:
+                        resource = R.drawable.chat_head_icon_any;
+                        break;
+                    case Constants.CONTEXT_ACTIVITY:
+                        resource = R.drawable.chat_head_icon_activity;
+                        break;
+                    case Constants.CONTEXT_HEADPHONE:
+                        resource = R.drawable.chat_head_icon_headphone;
+                        break;
+                    case Constants.CONTEXT_LOCATION:
+                        resource = R.drawable.chat_head_location;
+                        break;
+                    case Constants.CONTEXT_PLACES:
+                        resource = R.drawable.chat_head_icon_places;
+                        break;
+                    case Constants.CONTEXT_WEATHER:
+                        resource = R.drawable.chat_head_icon_weather;
+                        break;
+                }
+                return getResources().getDrawable(resource);
             }
 
             @Override
@@ -186,7 +207,7 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                         for (Map.Entry<String, BaseContext> entry : contextBundler.getContextes().entrySet()) {
                             String type = entry.getKey();
                             BaseContext baseContext = entry.getValue();
-                            if(baseContext != null && baseContext.getStates() != null ) {
+                            if (baseContext != null && baseContext.getStates() != null) {
                                 List<String> states = new ArrayList<String>(baseContext.getStates());
                                 for (String state : states) {
                                     DataHandler.saveEvent(getApplicationContext(), new Event(app, type, state));

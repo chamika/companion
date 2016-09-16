@@ -97,6 +97,9 @@ public class CalendarReader{
 
     private static String getAccount(Context context,String type){
         AccountManager manager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+            return "";
+        }
         Account[] list = manager.getAccounts();
         String acount = null;
 
