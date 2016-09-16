@@ -295,7 +295,8 @@ public class BackgroundService extends Service {
         }
         @Override
         public void run() {
-            CalendarReader.readCalendar(calendarServiceContext);
+            CalendarEventsResult calendarEventsResult = CalendarReader.readCalendar(calendarServiceContext);
+            contextBundler.addContext(calendarEventsResult);
         }
     }
 
