@@ -151,7 +151,8 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
             timer.cancel();
         }
         timer = new Timer();
-        timer.scheduleAtFixedRate(new UpdateChecker(), 0, 10000);
+        timer.scheduleAtFixedRate(new UpdateChecker(), 100, Constants.ACTIVITY_REFRESH_INTERVAL);
+        new UpdateChecker().run();
     }
 
     /**

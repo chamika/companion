@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.activity.CompanionActivity;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
@@ -96,8 +97,8 @@ public class BackgroundService extends Service {
                 timer.cancel();
             }
             timer = new Timer();
-            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 10000);
-            timer.scheduleAtFixedRate(new CalendarContextRetriever(this), 0, 10000);
+            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, Constants.SERVICE_REFRESH_INTERVAL);
+            timer.scheduleAtFixedRate(new CalendarContextRetriever(this), 0, Constants.SERVICE_REFRESH_INTERVAL);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -138,6 +139,8 @@ public class BackgroundService extends Service {
                 public void onBubbleClick(BubbleLayout bubble) {
                     Intent intent = new Intent(BackgroundService.this, CompanionActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //Add all types for showing
+                    contextBundler.getUpdatedTypes().addAll(Constants.LAUNCHER_CONTEXTS);
                     startActivity(intent);
                 }
             });

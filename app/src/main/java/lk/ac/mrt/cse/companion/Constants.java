@@ -9,6 +9,9 @@ import java.util.List;
 
 public class Constants {
 
+    public static final int ACTIVITY_REFRESH_INTERVAL = 5000;
+    public static final int SERVICE_REFRESH_INTERVAL = 10000;
+
     public static final String CONTEXT_ANY = "Any";
     public static final String CONTEXT_ACTIVITY = "Activity";
     public static final String CONTEXT_HEADPHONE = "Headphone";
@@ -17,5 +20,5 @@ public class Constants {
     public static final String CONTEXT_WEATHER = "Weather";
 
     public static final List<String> LAUNCHER_CONTEXTS = Arrays.asList(CONTEXT_ACTIVITY,
-            CONTEXT_HEADPHONE, CONTEXT_LOCATION, CONTEXT_PLACES, CONTEXT_WEATHER);
+            CONTEXT_HEADPHONE, CONTEXT_PLACES, CONTEXT_WEATHER);
 }
