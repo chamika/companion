@@ -208,7 +208,7 @@ public class LaunchersFragment extends Fragment {
                     sb.append("\n");
                 }
                 String state = states.get(i);
-                sb.append(state);
+                sb.append(state.replace("_", " "));
             }
             return sb.toString();
         }

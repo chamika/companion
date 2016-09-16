@@ -207,11 +207,13 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                         String app = launcher.getLaunchData();
                         for (Map.Entry<String, BaseContext> entry : contextBundler.getContextes().entrySet()) {
                             String type = entry.getKey();
-                            BaseContext baseContext = entry.getValue();
-                            if (baseContext != null && baseContext.getStates() != null) {
-                                List<String> states = new ArrayList<String>(baseContext.getStates());
-                                for (String state : states) {
-                                    DataHandler.saveEvent(getApplicationContext(), new Event(app, type, state));
+                            if (Constants.LAUNCHER_CONTEXTS.contains(type)) {
+                                BaseContext baseContext = entry.getValue();
+                                if (baseContext != null && baseContext.getStates() != null) {
+                                    List<String> states = new ArrayList<String>(baseContext.getStates());
+                                    for (String state : states) {
+                                        DataHandler.saveEvent(getApplicationContext(), new Event(app, type, state));
+                                    }
                                 }
                             }
                         }
