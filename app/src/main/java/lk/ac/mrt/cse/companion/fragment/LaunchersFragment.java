@@ -18,11 +18,17 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.adapter.IconAdapter;
+import lk.ac.mrt.cse.companion.model.BaseContext;
 import lk.ac.mrt.cse.companion.model.Launcher;
+import lk.ac.mrt.cse.companion.util.DataHandler;
 
 /**
  * Created by chamika on 9/11/16.
@@ -30,9 +36,15 @@ import lk.ac.mrt.cse.companion.model.Launcher;
 
 public class LaunchersFragment extends Fragment {
     private final static String TAG = LaunchersFragment.class.getSimpleName();
+
+    private static final Map<String, Launcher> lauchersMap = new HashMap<>();
+    private static AtomicBoolean cacheLoaded = new AtomicBoolean();
+
     private GridView gridView;
     private IconAdapter adapter;
     private OnAppLaunchListener launchListener;
+    private BaseContext baseContext;
+    private String type;
 
     @Nullable
     @Override
@@ -59,7 +71,7 @@ public class LaunchersFragment extends Fragment {
                                 intent.setComponent(new ComponentName(packageName, mainActivity));
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getContext().startActivity(intent);
-                                if(launchListener != null){
+                                if (launchListener != null) {
                                     launchListener.onAppLaunch(item);
                                 }
                             }
@@ -91,18 +103,23 @@ public class LaunchersFragment extends Fragment {
 
             @Override
             protected List doInBackground(String... params) {
+                initCache();
+
                 List<Launcher> data = new ArrayList<>();
 
-                final Intent main_intent = new Intent(Intent.ACTION_MAIN, null);
-                main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                PackageManager packageManager = getContext().getPackageManager();
-                List<ResolveInfo> infoList = packageManager.queryIntentActivities(main_intent, 0);
-
-                for (ResolveInfo ri : infoList) {
-                    String activityClass = ri.activityInfo.packageName;
-                    Drawable drawable = ri.loadIcon(packageManager);
-                    CharSequence title = ri.loadLabel(packageManager);
-                    data.add(new Launcher((String) title, drawable, activityClass));
+                if (type == null || Constants.CONTEXT_ANY.equals(type)) {
+                    data.addAll(lauchersMap.values());
+                } else {
+                    List states = baseContext.getStates();
+                    List<String> apps = DataHandler.loadApps(LaunchersFragment.this.getContext(), type, states);
+                    if (apps != null) {
+                        for (String app : apps) {
+                            Launcher launcher = lauchersMap.get(app);
+                            if (launcher != null) {
+                                data.add(launcher);
+                            }
+                        }
+                    }
                 }
 
                 return data;
@@ -111,10 +128,38 @@ public class LaunchersFragment extends Fragment {
             @Override
             protected void onPostExecute(List list) {
                 super.onPostExecute(list);
-                adapter.addAll(list);
-                adapter.notifyDataSetChanged();
+                updateGrid(list);
             }
         };
         task.execute();
+    }
+
+    private synchronized void initCache() {
+        if (cacheLoaded.compareAndSet(false, true)) {
+            final Intent main_intent = new Intent(Intent.ACTION_MAIN, null);
+            main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            PackageManager packageManager = getContext().getPackageManager();
+            List<ResolveInfo> infoList = packageManager.queryIntentActivities(main_intent, 0);
+
+            for (ResolveInfo ri : infoList) {
+                String activityClass = ri.activityInfo.packageName;
+                Drawable drawable = ri.loadIcon(packageManager);
+                CharSequence title = ri.loadLabel(packageManager);
+                lauchersMap.put(activityClass, new Launcher((String) title, drawable, activityClass));
+            }
+        }
+    }
+
+    private void updateGrid(List list) {
+        adapter.addAll(list);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void setBaseContext(BaseContext baseContext) {
+        this.baseContext = baseContext;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

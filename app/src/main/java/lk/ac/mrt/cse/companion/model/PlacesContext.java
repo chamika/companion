@@ -11,13 +11,16 @@ import java.util.List;
  */
 
 public class PlacesContext extends BaseContext<PlacesResult> {
+
+    public static final int MAX_STATES = 3;
+
     @Override
     public int difference(PlacesResult newData) {
         int diff = minChangeLevel() + 1;
         if (data != null && newData != null) {
             List<String> oldPlaces = getPlaceNames(data);
             List<String> newPlaces = getPlaceNames(newData);
-            diff = Math.max(oldPlaces.size(),newPlaces.size());
+            diff = Math.max(oldPlaces.size(), newPlaces.size());
             for (String oldPlace : oldPlaces) {
                 for (String newPlace : newPlaces) {
                     if (oldPlace.equals(newPlace)) {
@@ -40,11 +43,13 @@ public class PlacesContext extends BaseContext<PlacesResult> {
     }
 
 
-    private List<String> getPlaceNames(PlacesResult result){
+    private List<String> getPlaceNames(PlacesResult result) {
         List<String> places = new ArrayList<>();
-        if(result.getPlaceLikelihoods() != null) {
-            for (PlaceLikelihood hood : result.getPlaceLikelihoods()) {
-                places.add(hood.getPlace().getName().toString());
+        if (result.getPlaceLikelihoods() != null) {
+            int max = Math.min(result.getPlaceLikelihoods().size(), MAX_STATES);
+            for (int i = 0; i < max; i++) {
+                PlaceLikelihood hood = result.getPlaceLikelihoods().get(i);
+                places.add(String.valueOf(hood.getPlace().getName()));
             }
         }
 

@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by chamika on 9/11/16.
  */
@@ -61,6 +64,47 @@ public class BaseStore {
         );
     }
 
+    public static Cursor getAppsFromState(Context context, String tableName, String type, List<String> states) {
+        DBHelper mDbHelper = new DBHelper(context);
+
+        if (dbReadable == null || !dbReadable.isOpen()) {
+            dbReadable = mDbHelper.getReadableDatabase();
+        }
+
+        String[] projection = {
+                Structure.COLUMN_NAME_APP
+        };
+
+        StringBuilder inBuilder = new StringBuilder(Structure.COLUMN_NAME_STATE + " IN ( ");
+        for (int i = 0; i < states.size(); i++) {
+            if (i != 0) {
+                inBuilder.append(" , ");
+            }
+            inBuilder.append(" ? ");
+        }
+        inBuilder.append(" ) and ");
+        inBuilder.append(Structure.COLUMN_NAME_TYPE);
+        inBuilder.append(" = ? ");
+        String selection = inBuilder.toString();
+
+        String[] selectionArgs = Arrays.copyOf(states.toArray(new String[0]), states.size() + 1);
+        selectionArgs[selectionArgs.length - 1] = type;
+
+        String sortOrder = Structure.COLUMN_NAME_HITS + " DESC";
+
+        return dbReadable.query(
+                true,           //distinct
+                tableName,      // The table to query
+                projection,     // The columns to return
+                selection,      // The columns for the WHERE clause
+                selectionArgs,  // The values for the WHERE clause
+                null,           // don't group the rows
+                null,           // don't filter by row groups
+                sortOrder,       // The sort order
+                null           // no limit
+        );
+    }
+
     public static long saveEvent(Context context, String tableName, String app, String type, String state, int hitIncrement) {
         DBHelper mDbHelper = new DBHelper(context);
 
@@ -98,4 +142,6 @@ public class BaseStore {
             dbWritable.close();
         }
     }
+
+
 }
