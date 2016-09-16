@@ -100,6 +100,9 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                     case Constants.CONTEXT_WEATHER:
                         resource = R.drawable.chat_head_icon_weather;
                         break;
+                    case Constants.CONTEXT_CALENDAR:
+                        resource = R.drawable.chat_head_icon_calendar;
+                        break;
                 }
                 return getResources().getDrawable(resource);
             }
