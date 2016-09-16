@@ -141,6 +141,7 @@ public class BackgroundService extends Service {
                     Intent intent = new Intent(BackgroundService.this, CompanionActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     //Add all types for showing
+                    contextBundler.getUpdatedTypes().add(Constants.CONTEXT_CALENDAR);
                     contextBundler.getUpdatedTypes().addAll(Constants.LAUNCHER_CONTEXTS);
                     startActivity(intent);
                 }

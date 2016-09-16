@@ -38,6 +38,7 @@ import lk.ac.mrt.cse.companion.model.Event;
 import lk.ac.mrt.cse.companion.model.Launcher;
 import lk.ac.mrt.cse.companion.service.BackgroundService;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
+import lk.ac.mrt.cse.companion.util.CustomChatHeadConfig;
 import lk.ac.mrt.cse.companion.util.DataHandler;
 
 public class CompanionActivity extends AppCompatActivity implements OnAppLaunchListener {
@@ -53,6 +54,7 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
         setContentView(R.layout.activity_companion);
 
         chatContainer = (ChatHeadContainer) findViewById(R.id.chat_head_container);
+        chatContainer.setConfig(new CustomChatHeadConfig(this));
         chatContainer.setViewAdapter(new ChatHeadViewAdapter<String>() {
             @Override
             public FragmentManager getFragmentManager() {
