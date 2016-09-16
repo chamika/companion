@@ -64,12 +64,16 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                 // return the fragment which should be shown when the arrangment switches to maximized (on clicking a chat head)
                 // you can use the key parameter to get back the object you passed in the addChatHead method.
                 // this key should be used to decide which fragment to show.
-                if(key.equals("Calendar")){
-                    //return new
+                if (Constants.CONTEXT_ANY.equals(key) || Constants.LAUNCHER_CONTEXTS.contains(key)) {
+                    LaunchersFragment launchersFragment = new LaunchersFragment();
+                    launchersFragment.setLaunchListener(CompanionActivity.this);
+                    launchersFragment.setType(key);
+                    launchersFragment.setBaseContext(getServiceBaseContext(key));
+                    return launchersFragment;
+                } else {
+                    //returns empty fragment
+                    return new Fragment();
                 }
-                LaunchersFragment launchersFragment = new LaunchersFragment();
-                launchersFragment.setLaunchListener(CompanionActivity.this);
-                return launchersFragment;
             }
 
             @Override
@@ -169,7 +173,7 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
 
     @Override
     public void onAppLaunch(final Launcher launcher) {
-        //TODO: save to database with current context and launcher.package
+        //save to database with current context and launcher.package
         if (backgroundService != null) {
 
             new AsyncTask<Launcher, Integer, Boolean>() {
@@ -201,6 +205,13 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
             }.execute(launcher);
 
         }
+    }
+
+    private BaseContext getServiceBaseContext(String type) {
+        if (backgroundService != null && backgroundService.getContextBundler() != null) {
+            return backgroundService.getContextBundler().getContextes().get(type);
+        }
+        return null;
     }
 
     private class UpdateChecker extends TimerTask {
