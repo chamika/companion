@@ -18,6 +18,7 @@ public class Constants {
     public static final String CONTEXT_LOCATION = "Location";
     public static final String CONTEXT_PLACES = "Places";
     public static final String CONTEXT_WEATHER = "Weather";
+    public static final String CONTEXT_CALENDAR = "Calendar";
 
     public static final List<String> LAUNCHER_CONTEXTS = Arrays.asList(CONTEXT_ACTIVITY,
             CONTEXT_HEADPHONE, CONTEXT_PLACES, CONTEXT_WEATHER);

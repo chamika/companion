@@ -39,6 +39,7 @@ import java.util.TimerTask;
 import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.activity.CompanionActivity;
+import lk.ac.mrt.cse.companion.model.CalendarEventsResult;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
 
 /**

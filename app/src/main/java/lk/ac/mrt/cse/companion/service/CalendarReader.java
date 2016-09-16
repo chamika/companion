@@ -21,7 +21,10 @@ import android.util.Log;
 import java.util.Date;
 import java.util.HashSet;
 
-public class CalendarReader{
+import lk.ac.mrt.cse.companion.model.CalendarEvent;
+import lk.ac.mrt.cse.companion.model.CalendarEventsResult;
+
+public class CalendarReader {
 
     private static final String TAG = CalendarReader.class.getSimpleName();
 
@@ -37,14 +40,14 @@ public class CalendarReader{
     private static final int PROJECTION_DISPLAY_NAME_INDEX = 2;
     private static final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
 
-    public static void readCalendar(Context context) {
+    public static CalendarEventsResult readCalendar(Context context) {
 
         HashSet<String> calendarIds = new HashSet<String>();
+        CalendarEventsResult calendarEvents = new CalendarEventsResult();
+        String accountType = "com.google";
+        String account = getAccount(context, accountType);
 
-        String accountType =  "com.google";
-        String account = getAccount(context,accountType);
-
-        if(account != null ){
+        if (account != null) {
 
             Cursor cursor = null;
             ContentResolver cr = context.getContentResolver();
@@ -56,7 +59,7 @@ public class CalendarReader{
                     account};
 
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                return;
+                return null;
             }
             cursor = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
 
@@ -77,25 +80,31 @@ public class CalendarReader{
                 ContentUris.appendId(builder, now + DateUtils.DAY_IN_MILLIS * 10000);
 
                 Cursor eventCursor = cr.query(builder.build(),
-                        new String[]{"title", "begin", "end", "allDay"}, "calendar_id=" + id,
+                        new String[]{"_id", "title", "begin", "end", "allDay", "eventLocation", "description"}, "calendar_id=" + id,
                         null, "startDay ASC, startMinute ASC");
 
                 while (eventCursor.moveToNext()) {
+                    final int eventId = eventCursor.getInt(0);
                     final String title = eventCursor.getString(0);
                     final Date begin = new Date(eventCursor.getLong(1));
                     final Date end = new Date(eventCursor.getLong(2));
                     final Boolean allDay = !eventCursor.getString(3).equals("0");
+                    final String location= eventCursor.getString(4);
+                    final String description= eventCursor.getString(5);
 
 
-                    Log.i(TAG,"Title: " + title + " Begin: " + begin + " End: " + end + " All Day: " + allDay);
+                    Log.d(TAG, "Id: " + id + "Title: " + title + " Begin: " + begin + " End: " + end + " All Day: " + allDay + " Location: " + location + " Decs: " + description);
 
+                    CalendarEvent calendarEvent = new CalendarEvent(eventId, title, begin, end, allDay, location, description);
+                    calendarEvents.addCalendarEvent(calendarEvent);
                 }
             }
         }
+        return calendarEvents;
     }
 
 
-    private static String getAccount(Context context,String type){
+    private static String getAccount(Context context, String type) {
         AccountManager manager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
             return "";
@@ -103,10 +112,8 @@ public class CalendarReader{
         Account[] list = manager.getAccounts();
         String acount = null;
 
-        for(Account account: list)
-        {
-            if(account.type.equalsIgnoreCase(type))
-            {
+        for (Account account : list) {
+            if (account.type.equalsIgnoreCase(type)) {
                 acount = account.name;
                 break;
             }
