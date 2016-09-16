@@ -13,8 +13,14 @@
     tools:context="lk.ac.mrt.cse.companion.activity.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
+    <Button
+        android:text="Start/Stop Companion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/button_start"
+        android:layout_centerInParent="true"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        android:layout_gravity="center_vertical|center_horizontal" />
+
 </RelativeLayout>
