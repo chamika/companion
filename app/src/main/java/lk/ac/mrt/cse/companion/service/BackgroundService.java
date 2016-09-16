@@ -2,6 +2,7 @@ package lk.ac.mrt.cse.companion.service;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
@@ -96,6 +97,7 @@ public class BackgroundService extends Service {
             }
             timer = new Timer();
             timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 10000);
+            timer.scheduleAtFixedRate(new CalendarContextRetriever(this), 0, 10000);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -278,6 +280,18 @@ public class BackgroundService extends Service {
         @Override
         public void run() {
             getSnapshotUpdate();
+        }
+    }
+
+    private class CalendarContextRetriever extends TimerTask {
+
+        private Context calendarServiceContext;
+        CalendarContextRetriever(Context context){
+            this.calendarServiceContext = context;
+        }
+        @Override
+        public void run() {
+            CalendarReader.readCalendar(calendarServiceContext);
         }
     }
 

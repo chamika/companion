@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 
 import com.flipkart.chatheads.ui.ChatHead;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -65,6 +64,9 @@ public class CompanionActivity extends AppCompatActivity implements OnAppLaunchL
                 // return the fragment which should be shown when the arrangment switches to maximized (on clicking a chat head)
                 // you can use the key parameter to get back the object you passed in the addChatHead method.
                 // this key should be used to decide which fragment to show.
+                if(key.equals("Calendar")){
+                    //return new
+                }
                 LaunchersFragment launchersFragment = new LaunchersFragment();
                 launchersFragment.setLaunchListener(CompanionActivity.this);
                 return launchersFragment;

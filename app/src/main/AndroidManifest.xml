@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="lk.ac.mrt.cse.companion">
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"></uses-permission>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -13,10 +15,13 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyDgcMEXZ-gCuoE9N_sVE07NLnn8M4m4PKs"/>
+            android:value="AIzaSyAqap2hxj_oXa9KGkrJgHtRxvXy-Bh2Le4"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDgcMEXZ-gCuoE9N_sVE07NLnn8M4m4PKs" />
+            android:value="AIzaSyAqap2hxj_oXa9KGkrJgHtRxvXy-Bh2Le4" />
+        <meta-data
+            android:name="com.google.android.nearby.messages.API_KEY"
+            android:value="AIzaSyAqap2hxj_oXa9KGkrJgHtRxvXy-Bh2Le4" />
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
