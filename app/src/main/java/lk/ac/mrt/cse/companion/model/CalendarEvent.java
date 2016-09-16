@@ -18,6 +18,7 @@ public class CalendarEvent {
     private String description;
 
     public CalendarEvent(int id, String title, Date begin, Date end, Boolean allDay, String location, String description) {
+        this.id = id;
         this.title = title;
         this.begin = begin;
         this.end = end;
