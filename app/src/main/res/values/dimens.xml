@@ -6,4 +6,5 @@
     <dimen name="icon_size">60dp</dimen>
     <dimen name="icon_item_width">80dp</dimen>
     <dimen name="icon_item_height">120dp</dimen>
+    <dimen name="chat_head_icon_margin">200dp</dimen>
 </resources>
