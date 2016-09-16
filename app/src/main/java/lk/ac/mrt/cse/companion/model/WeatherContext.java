@@ -50,9 +50,9 @@ public class WeatherContext extends BaseContext<WeatherResult> {
                 }
             }
 
-            states.add("Temperature:" + weather.getTemperature(Weather.CELSIUS));
-            states.add("Feels:" + weather.getFeelsLikeTemperature(Weather.CELSIUS));
-            states.add("Humidity:" + weather.getHumidity());
+            states.add("Temperature:" + weather.getTemperature(Weather.CELSIUS) + "°C");
+            states.add("Feels:" + weather.getFeelsLikeTemperature(Weather.CELSIUS) + "°C");
+            states.add("Humidity:" + weather.getHumidity() + "%");
 
             return states;
 

@@ -110,6 +110,29 @@ public class LaunchersFragment extends Fragment {
             textStates.setText("All Applications");
         }
 
+        int resourceId = R.mipmap.ic_launcher;
+        switch (type) {
+            case Constants.CONTEXT_ANY:
+                resourceId = R.drawable.chat_head_any;
+                break;
+            case Constants.CONTEXT_ACTIVITY:
+                resourceId = R.drawable.chat_head_activity;
+                break;
+            case Constants.CONTEXT_HEADPHONE:
+                resourceId = R.drawable.chat_head_headphone;
+                break;
+            case Constants.CONTEXT_LOCATION:
+                resourceId = R.drawable.chat_head_location;
+                break;
+            case Constants.CONTEXT_PLACES:
+                resourceId = R.drawable.chat_head_places;
+                break;
+            case Constants.CONTEXT_WEATHER:
+                resourceId = R.drawable.chat_head_weather;
+                break;
+        }
+        imageTitle.setImageResource(resourceId);
+
         AsyncTask<String, Integer, List> task = new AsyncTask<String, Integer, List>() {
 
             @Override
