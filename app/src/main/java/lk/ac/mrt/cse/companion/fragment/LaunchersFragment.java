@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +144,7 @@ public class LaunchersFragment extends Fragment {
                 List<Launcher> data = new ArrayList<>();
 
                 if (type == null || Constants.CONTEXT_ANY.equals(type)) {
-                    data.addAll(lauchersMap.values());
+                    data.addAll(new ArrayList<Launcher>(lauchersMap.values()));
                 } else {
                     List states = baseContext.getStates();
                     List<String> apps = DataHandler.loadApps(LaunchersFragment.this.getContext(), type, states);
@@ -156,6 +158,7 @@ public class LaunchersFragment extends Fragment {
                     }
                 }
 
+                sortLaunchersByName(data);
                 return data;
             }
 
@@ -210,5 +213,16 @@ public class LaunchersFragment extends Fragment {
             return sb.toString();
         }
         return "";
+    }
+
+    private final Comparator<Launcher> NAME_COMPARATOR = new Comparator<Launcher>() {
+        @Override
+        public int compare(Launcher o1, Launcher o2) {
+            return o1.getTitle().compareTo(o2.getTitle());
+        }
+    };
+
+    private void sortLaunchersByName(List<Launcher> launchers) {
+        Collections.sort(launchers, NAME_COMPARATOR);
     }
 }
