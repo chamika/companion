@@ -14,6 +14,8 @@ import java.util.Set;
 import lk.ac.mrt.cse.companion.Constants;
 import lk.ac.mrt.cse.companion.model.ActivityContext;
 import lk.ac.mrt.cse.companion.model.BaseContext;
+import lk.ac.mrt.cse.companion.model.CalendarContext;
+import lk.ac.mrt.cse.companion.model.CalendarEventsResult;
 import lk.ac.mrt.cse.companion.model.HeadphoneContext;
 import lk.ac.mrt.cse.companion.model.PlacesContext;
 import lk.ac.mrt.cse.companion.model.WeatherContext;
@@ -35,6 +37,7 @@ public class ContextBundler {
         contextes.put(Constants.CONTEXT_ACTIVITY, new ActivityContext());
         contextes.put(Constants.CONTEXT_HEADPHONE, new HeadphoneContext());
         contextes.put(Constants.CONTEXT_PLACES, new PlacesContext());
+        contextes.put(Constants.CONTEXT_CALENDAR, new CalendarContext());
     }
 
     /**
@@ -53,6 +56,8 @@ public class ContextBundler {
             type = Constants.CONTEXT_HEADPHONE;
         } else if (result instanceof PlacesResult) {
             type = Constants.CONTEXT_PLACES;
+        }else if (result instanceof CalendarEventsResult) {
+            type = Constants.CONTEXT_CALENDAR;
         }
 
         baseContext = contextes.get(type);

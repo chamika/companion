@@ -38,6 +38,7 @@ import java.util.TimerTask;
 
 import lk.ac.mrt.cse.companion.R;
 import lk.ac.mrt.cse.companion.activity.CompanionActivity;
+import lk.ac.mrt.cse.companion.model.CalendarEventsResult;
 import lk.ac.mrt.cse.companion.util.ContextBundler;
 
 /**
@@ -96,7 +97,7 @@ public class BackgroundService extends Service {
                 timer.cancel();
             }
             timer = new Timer();
-            timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 10000);
+            //timer.scheduleAtFixedRate(new SnapshopRetriever(), 0, 10000);
             timer.scheduleAtFixedRate(new CalendarContextRetriever(this), 0, 10000);
         }
         return super.onStartCommand(intent, flags, startId);
@@ -291,7 +292,8 @@ public class BackgroundService extends Service {
         }
         @Override
         public void run() {
-            CalendarReader.readCalendar(calendarServiceContext);
+            CalendarEventsResult calendarEventsResult = CalendarReader.readCalendar(calendarServiceContext);
+            contextBundler.addContext(calendarEventsResult);
         }
     }
 
